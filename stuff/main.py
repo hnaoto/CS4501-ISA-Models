@@ -1,5 +1,7 @@
 import datetime
 
+from rest_framework import status
+from rest_framework.response import Response
 from django.http import JsonResponse
 from django.contrib.auth import hashers
 from django import db
@@ -9,7 +11,8 @@ from stuff import models
 
 def create_user(request):
     if request.method != 'POST':
-        return _error_response(request, "must make POST request")
+        return HttpResponse("must make POST", status=404)
+    #return _error_response(request, "must make POST request")
     if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
         return _error_response(request, "missing required fields")
     #create basic user account
