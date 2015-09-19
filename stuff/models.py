@@ -1,0 +1,39 @@
+import datetime
+from django.db import models
+from django.utils import timezone
+
+
+class Buyer(models.Model):
+    #username = models.CharField(max_length=50, unique=true)
+    resume_url = models.URLField(max_length=200)
+    user_account = models.ForeignKey(User, unique=true)
+
+
+class Seller(models.Model):
+    company = models.ForeignKey(Company, unique=true)
+    user_account = models.ForeignKey(User, unique=true)
+
+
+class User(models.model):
+    username = models.CharField(max_length=50, unique=true)
+    password = models.CharField(max_length=96)
+    usertype = models.CharField(max_length=6)
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=24)
+    description = models.TextField(max_length=500)
+
+
+class Transaction(models.Model):
+    buyer = models.ForeignKey(buyer)
+    seller = models.ForeignKey(Seller)
+    timestamp = models.DateTimeField(default=timezone.now)
+    negotiation = models.TextField(max_length=1000)
+
+
+class JobApplication(models.Model):
+    company = models.ForeignKey(Company, unique=true)
+    buyer = models.ForeignKey(Buyer)
+    greeting = models.CharField(max_length=256)
+    detail = models.TextField(max_length=1000)
