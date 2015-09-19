@@ -18,12 +18,12 @@ class Company(models.Model):
 class Buyer(models.Model):
     #username = models.CharField(max_length=50, unique=true)
     resume_url = models.URLField(max_length=200)
-    user_account = models.ForeignKey(User, unique=true)
+    user_account = models.ForeignKey(User, unique=True)
 
 
 class Seller(models.Model):
     company = models.OneToOneField(Company)
-    user_account = models.ForeignKey(User, unique=true)
+    user_account = models.ForeignKey(User, unique=True)
 
 
 
