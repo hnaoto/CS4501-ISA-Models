@@ -4,7 +4,7 @@ from django.utils import timezone
 
 
 class User(models.Model):
-    username = models.CharField(max_length=50, unique=true)
+    username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=96)
     usertype = models.CharField(max_length=6)
 
