@@ -1,12 +1,13 @@
 import datetime
+import json
 
-from rest_framework import status
-from rest_framework.response import Response
 from django.http import JsonResponse
 from django.contrib.auth import hashers
 from django import db
 
 from stuff import models
+from django.http import HttpResponse
+
 
 
 def create_user(request):
