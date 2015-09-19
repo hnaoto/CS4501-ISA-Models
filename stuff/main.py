@@ -104,7 +104,7 @@ def create_JobApplication(request):
         return _error_response(request, "can't store JobApplication. db error")
 
 
-def create_company:
+def create_company(reqeust):
     if request.method != 'POST':
         return HttpResponse("must make POST", status=400)
     if 'name' not in request.POST or 'description' not in request.POST:
