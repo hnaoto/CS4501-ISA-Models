@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 
-class User(models.model):
+class User(models.Model):
     username = models.CharField(max_length=50, unique=true)
     password = models.CharField(max_length=96)
     usertype = models.CharField(max_length=6)
