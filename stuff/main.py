@@ -13,9 +13,10 @@ from django.http import HttpResponse
 def create_user(request):
     if request.method != 'POST':
         return HttpResponse("must make POST", status=404)
-    #return _error_response(request, "must make POST request")
+        #return _error_response(request, "must make POST request")
+        #_error_reponse is not defined.....(?)
     if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
-        return _error_response(request, "missing required fields")
+        return HttpResponse("missing required fields",status=400)
     #create basic user account
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
@@ -23,7 +24,8 @@ def create_user(request):
     try:
         u.save()
     except db.Error:
-        return _error_response(request, "can't store User. db error")
+        #return _error_response(request, "can't store User. db error")
+        return HttpResponse("DB error",status=400)
     #create seller
     if(request.POST['usertype'] == 'seller'):
 
