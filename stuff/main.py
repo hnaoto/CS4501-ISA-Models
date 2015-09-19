@@ -104,4 +104,14 @@ def create_JobApplication(request):
         return _error_response(request, "can't store JobApplication. db error")
 
 
-
+def create_company:
+    if request.method != 'POST':
+        return HttpResponse("must make POST", status=400)
+    if 'name' not in request.POST or 'description' not in request.POST:
+        return HttpResponse("missing company name or description", status=400)
+    #create basic user account
+    c = models.Company(name=request.POST['name'],description=reqeust.POST['description'])
+    try:
+        c.save()
+    except db.Error:
+        return HttpResponse("DB error",status=500)
