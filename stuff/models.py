@@ -10,7 +10,7 @@ class Buyer(models.Model):
 
 
 class Seller(models.Model):
-    company = models.ForeignKey(Company, unique=true)
+    company = models.OneToOneField(Company)
     user_account = models.ForeignKey(User, unique=true)
 
 
@@ -26,14 +26,17 @@ class Company(models.Model):
 
 
 class Transaction(models.Model):
-    buyer = models.ForeignKey(buyer)
-    seller = models.ForeignKey(Seller)
+    #buyer = models.ForeignKey(buyer)
+    #seller = models.ForeignKey(Seller)
+    buyer= models.OneToOneField(Buyer)
+    seller = models.OneToOneField(Seller)
     timestamp = models.DateTimeField(default=timezone.now)
     negotiation = models.TextField(max_length=1000)
 
 
 class JobApplication(models.Model):
-    company = models.ForeignKey(Company, unique=true)
-    buyer = models.ForeignKey(Buyer)
+    #company = models.ForeignKey(Company, unique=true)
+    company = models.OneToOneField(Company)
+    buyer = models.OneToOneField(Buyer)
     greeting = models.CharField(max_length=256)
     detail = models.TextField(max_length=1000)
