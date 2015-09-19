@@ -33,8 +33,11 @@ def create_user(request):
         try:
             s.save()
         except db.Error:
-            return _error_response(request, "can't store Seller. db error")
-        return _success_response(request, {'seller_id': s.pk})
+            #return _error_response(request, "can't store Seller. db error")
+            return HttpResponse("can't write into DB",status=500)
+        #return _success_response(request, {'seller_id': s.pk})
+        json_data = json.dumps({"selller_id":s.pk})
+        return HttpResponse(json_data,status=200 )
     #create buyer
     if(request.POST['usertype'] == 'buyer'):
         b = models.Seller(company=models.Company.get(name=request.POST['company_name']), user_account=u)
