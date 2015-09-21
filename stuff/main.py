@@ -115,3 +115,4 @@ def create_company(request):
         c.save()
     except db.Error:
         return HttpResponse("DB error",status=500)
+    return HttpResponse("Company stored Ok",status=200 )
