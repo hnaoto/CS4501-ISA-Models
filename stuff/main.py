@@ -110,7 +110,7 @@ def create_company(request):
     if 'name' not in request.POST or 'description' not in request.POST:
         return HttpResponse("missing company name or description", status=400)
     #create basic user account
-    c = models.Company(name=request.POST['name'],description=reqeust.POST['description'])
+    c = models.Company(name=request.POST['name'],description=request.POST['description'])
     try:
         c.save()
     except db.Error:
