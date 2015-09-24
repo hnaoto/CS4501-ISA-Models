@@ -12,11 +12,12 @@ from django.http import HttpResponse
 
 def create_user(request):
     if request.method != 'POST':
-        return HttpResponse("must make POST", status=400)
-        #return _error_response(request, "must make POST request")
-        #_error_reponse is not defined.....(?)
+        #return HttpResponse("must make POST", status=400)
+        return _error_response(request, "must make POST request")
     if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
-        return HttpResponse("missing required fields",status=400)
+        #return HttpResponse("missing required fields",status=400)
+        return _error_response(request, "missing fields")
+    
     #create basic user account
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
@@ -24,8 +25,8 @@ def create_user(request):
     try:
         u.save()
     except db.Error:
-        #return _error_response(request, "can't store User. db error")
-        return HttpResponse("DB error",status=400)
+        return _error_response(request, "can't store User. db error")
+    #return HttpResponse("DB error",status=400)
     #create seller
     if(request.POST['usertype'] == 'seller'):
 
@@ -33,9 +34,9 @@ def create_user(request):
         try:
             s.save()
         except db.Error:
-            #return _error_response(request, "can't store Seller. db error")
-            return HttpResponse("can't write into DB",status=500)
-        #return _success_response(request, {'seller_id': s.pk})
+            return _error_response(request, "can't store Seller. db error")
+            #return HttpResponse("can't write into DB",status=500)
+        return _success_response(request, {'seller_id': s.pk})
         json_data = json.dumps({"selller_id":s.pk})
         return HttpResponse(json_data,status=200 )
     #create buyer
@@ -108,11 +109,22 @@ def create_company(request):
     if request.method != 'POST':
         return HttpResponse("must make POST", status=400)
     if 'name' not in request.POST or 'description' not in request.POST:
-        return HttpResponse("missing company name or description", status=400)
+        return _error_response(request, "missing fields")
     #create basic user account
-    c = models.Company(name=request.POST['name'],description=request.POST['description'])
+    c = models.Company(name=request.POST['name'], description=request.POST['description'])
     try:
         c.save()
     except db.Error:
-        return HttpResponse("DB error",status=500)
-    return HttpResponse("Company stored Ok",status=200 )
+        return HttpResponse("DB error", status=500)
+    return HttpResponse("Company stored Ok", status=200)
+
+
+
+def _error_response(request, error_msg):
+    return JsonResponse({'ok': False, 'error': error_msg})
+
+def _success_response(request, resp=None):
+    if resp:
+        return JsonResponse({'ok': True, 'resp': resp})
+    else:
+        return JsonResponse({'ok': True})
