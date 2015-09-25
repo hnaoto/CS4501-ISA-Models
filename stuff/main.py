@@ -17,7 +17,7 @@ def create_user(request):
     if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
         #return HttpResponse("missing required fields",status=400)
         return _error_response(request, "missing fields")
-    if request.POST['usertype'] != 'seller' or request.POST['usertype'] != 'buyer':
+    if request.POST.get('usertype') != 'seller' request.POST.get('usertype') != 'buyer':
         return _error_response(request, "invalid usertype")
 
     #create basic user account
