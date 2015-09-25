@@ -17,7 +17,9 @@ def create_user(request):
     if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
         #return HttpResponse("missing required fields",status=400)
         return _error_response(request, "missing fields")
-    
+    if request.POST['usertype'] != 'seller' || request.POST['usertype'] != 'buyer':
+        return _error_response(request, "invalid usertype")
+
     #create basic user account
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
@@ -26,19 +28,17 @@ def create_user(request):
         u.save()
     except db.Error:
         return _error_response(request, "can't store User. db error")
-    #return HttpResponse("DB error",status=400)
+
+
     #create seller
     if(request.POST['usertype'] == 'seller'):
-
-        s = models.Seller(company=models.Company.get(name=request.POST['company_name']), user_account=u)
+        s = models.Seller(company=models.Company.objects.filter(name=request.POST['company_name']), user_account=u)
         try:
             s.save()
         except db.Error:
             return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
         return _success_response(request, {'seller_id': s.pk})
-        json_data = json.dumps({"selller_id":s.pk})
-        return HttpResponse(json_data,status=200 )
     #create buyer
     if(request.POST['usertype'] == 'buyer'):
         b = models.Seller(company=models.Company.get(name=request.POST['company_name']), user_account=u)
