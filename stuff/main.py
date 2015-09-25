@@ -32,7 +32,7 @@ def create_user(request):
 
     #create seller
     if(request.POST['usertype'] == 'seller'):
-        s = models.Seller(company=Company.objects.filter(name=request.POST['company_name']), user_account=u)
+        s = models.Seller(company=model.Company.objects.filter(name=request.POST['company_name']), user_account=u)
         try:
             s.save()
         except db.Error:
