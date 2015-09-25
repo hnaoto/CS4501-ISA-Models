@@ -1,0 +1,2 @@
+from django.contrib import admin
+from stuff.models import User, Company, Transaction, JobApplication
