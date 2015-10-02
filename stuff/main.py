@@ -72,7 +72,7 @@ def lookup_user(request, user_id):
         return _error_response(request, "user not found")
     if(u.usertype=='seller'):
         #s = models.Seller.objects.get(user_account=u)
-        s = get_object_or_404(Seller, user_account=u)
+        s = get_object_or_404(models.Seller, user_account=u)
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
                                             'company': s.company.name})
