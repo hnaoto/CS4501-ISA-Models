@@ -75,7 +75,7 @@ def lookup_user(request, user_id):
                                             'usertype': u.usertype,
                                             'company': s.company})
     if(u.usertype=='buyer'):
-        b = models.Buyer.objects.get(user_account=u)
+        b = models.Buyer.objects.get(user_account=user_u)
         #b = u.user_set.get()
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
