@@ -9,7 +9,7 @@ from stuff import models
 from django.http import HttpResponse
 
 
-
+#Tested
 def create_user(request):
     if request.method != 'POST':
         #return HttpResponse("must make POST", status=400)
@@ -62,7 +62,7 @@ def create_user(request):
 
 
 
-def lookup_user(reqeust, user_id):
+def lookup_user(request, user_id):
     if reqeust.method !='GET':
         return _error_response(request, "must make GET request")
     try:
