@@ -77,8 +77,8 @@ def lookup_user(request, user_id):
                                             'usertype': u.usertype,
                                             'company': s.company.name})
     if(u.usertype=='buyer'):
-        b = models.Buyer.objects.get(user_account=u)
-        #b = u.user_set.get()
+        #b = models.Buyer.objects.get(user_account=u)
+        b = get_object_or_404(models.Buyer, user_account=u)
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
                                             'resume':b.resume_url})
