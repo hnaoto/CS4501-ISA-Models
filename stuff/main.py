@@ -50,7 +50,7 @@ def create_user(request):
 
     ##create buyer
     if(request.POST['usertype'] == 'buyer'):
-        b = models.Buyer(resume_url=request.POST['resume_url']), user_account=u)
+        b = models.Buyer(resume_url=request.POST['resume_url'], user_account=u)
         try:
             b.save()
         except db.Error:
