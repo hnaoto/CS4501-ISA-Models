@@ -17,8 +17,8 @@ def create_user(request):
     if 'usertype' not in request.POST:
         return _error_response(request, "Usertype is not found")
 
-    if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST:
-        return _error_response(request, "missing fields")
+    if 'password' not in request.POST or 'username' not in request.POST:
+        return _error_response(request, "missing fields for Basic User")
     if request.POST['usertype'] == 'buyer' and 'resume_url' not in request.POST:
         return _error_response(request, "missing fields for Buyer")
     if request.POST['usertype'] == 'seller' and 'company_name' not in request.POST:
