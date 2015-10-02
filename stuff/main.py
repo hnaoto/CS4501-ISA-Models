@@ -63,7 +63,7 @@ def create_user(request):
 
 
 def lookup_user(request, user_id):
-    if reqeust.method !='GET':
+    if  request.method !='GET':
         return _error_response(request, "must make GET request")
     try:
         u = models.User.objects.get(pk=user_id)
