@@ -24,8 +24,6 @@ def create_user(request):
     if request.POST['usertype'] == 'seller' and 'company_name' not in request.POST:
         return _error_response(request, "missing fields for Seller")
 
-
-
     ##create_user
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
@@ -52,7 +50,7 @@ def create_user(request):
 
     ##create buyer
     if(request.POST['usertype'] == 'buyer'):
-        b = models.Seller(company=models.Company.get(name=request.POST['company_name']), user_account=u)
+        b = models.Buyer(resume_url=request.POST['resume_url']), user_account=u)
         try:
             b.save()
         except db.Error:
