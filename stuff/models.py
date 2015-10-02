@@ -50,4 +50,5 @@ class JobApplication(models.Model):
     buyer = models.OneToOneField(Buyer)
     greeting = models.CharField(max_length=256)
     detail = models.TextField(max_length=1000)
- 
+    def __str__(self):
+        return self.greeting
