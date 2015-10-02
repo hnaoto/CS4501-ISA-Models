@@ -14,13 +14,19 @@ def create_user(request):
     if request.method != 'POST':
         #return HttpResponse("must make POST", status=400)
         return _error_response(request, "must make POST request")
-    if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST or 'usertype' not in request.POST:
-        #return HttpResponse("missing required fields",status=400)
+    if 'usertype' not in request.POST:
+        return _error_response(request, "Usertype is not found")
+
+    if 'password' not in request.POST or 'username' not in request.POST or 'company_name' not in request.POST:
         return _error_response(request, "missing fields")
-#if request.POST['usertype'] == 'seller' or request.POST['usertype'] == 'buyer':
+    if request.POST['usertype'] == 'buyer' and 'resume_url' not in request.POST:
+        return _error_response(request, "missing fields for Buyer")
+    if request.POST['usertype'] == 'seller' and 'company_name' not in request.POST:
+        return _error_response(request, "missing fields for Seller")
 
 
-    #create basic user account
+
+    ##create_user
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
                     usertype=request.POST['usertype'])
@@ -30,16 +36,21 @@ def create_user(request):
         return _error_response(request, "can't store User. db error")
 
 
-    #create seller
+
+    ##create seller
     if(request.POST['usertype'] == 'seller'):
         s = models.Seller(company=models.Company.objects.get(name=request.POST['company_name']), user_account=u)
         try:
-            s.save()
+             s.save()
         except db.Error:
             return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
         return _success_response(request, {'seller_id': s.pk})
-    #create buyer
+
+
+
+
+    ##create buyer
     if(request.POST['usertype'] == 'buyer'):
         b = models.Seller(company=models.Company.get(name=request.POST['company_name']), user_account=u)
         try:
@@ -47,6 +58,10 @@ def create_user(request):
         except db.Error:
             return _error_response(request, "can't store Seller. db error")
         return _success_response(request, {'buyer_id': b.pk})
+
+
+
+
 
 
 def lookup_user(reqeust, user_id):
@@ -67,6 +82,10 @@ def lookup_user(reqeust, user_id):
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
                                             'resume':b.resume_url})
+
+
+
+
 
 
 def create_transaction(request):
