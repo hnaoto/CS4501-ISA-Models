@@ -7,6 +7,7 @@ from django import db
 
 from stuff import models
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 
 #Tested
@@ -70,12 +71,13 @@ def lookup_user(request, user_id):
     except models.User.DoesNotExist:
         return _error_response(request, "user not found")
     if(u.usertype=='seller'):
-        s = models.Seller.objects.get(user_account=u)
+        #s = models.Seller.objects.get(user_account=u)
+        s = get_object_or_404(Seller, user_account=u)
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
                                             'company': s.company.name})
     if(u.usertype=='buyer'):
-        b = models.Buyer.objects.get(user_account=user_u)
+        b = models.Buyer.objects.get(user_account=u)
         #b = u.user_set.get()
         return _success_response(request, {'username': u.username,
                                             'usertype': u.usertype,
