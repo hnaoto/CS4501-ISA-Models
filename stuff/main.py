@@ -62,7 +62,7 @@ def create_user(request):
 
 
 
-
+#Tested
 def lookup_user(request, user_id):
     if  request.method !='GET':
         return _error_response(request, "must make GET request")
@@ -83,6 +83,10 @@ def lookup_user(request, user_id):
                                             'usertype': u.usertype,
                                             'resume':b.resume_url})
 
+
+
+
+def list_all_users(request):
 
 
 
@@ -124,6 +128,7 @@ def create_JobApplication(request):
         return _error_response(request, "can't store JobApplication. db error")
 
 
+#Tested
 def create_company(request):
     if request.method != 'POST':
         return HttpResponse("must make POST", status=400)
@@ -136,6 +141,8 @@ def create_company(request):
     except db.Error:
         return HttpResponse("DB error", status=500)
     return HttpResponse("Company stored Ok", status=200)
+
+
 
 
 
