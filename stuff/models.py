@@ -40,8 +40,7 @@ class Transaction(models.Model):
     seller = models.OneToOneField(Seller)
     timestamp = models.DateTimeField(default=timezone.now)
     negotiation = models.TextField(max_length=1000)
-    def __str__(self):
-        return self.negotiation
+
 
 
 class JobApplication(models.Model):
