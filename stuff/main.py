@@ -8,8 +8,6 @@ from stuff import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from django.db import IntegrityError
-from django.shortcuts import render_to_response
 
 
 #Tested
@@ -45,7 +43,6 @@ def create_user(request):
         s = models.Seller(company=models.Company.objects.get(name=request.POST['company_name']), user_account=u)
         try:
              s.save()
-
         except db.Error:
             return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
