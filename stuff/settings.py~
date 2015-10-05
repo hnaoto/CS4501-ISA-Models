@@ -1,5 +1,5 @@
 """
-Django settings for  project.
+Django settings for stuff project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -35,8 +35,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+                  #'django.contrib.sessions',
+                  #'django.contrib.messages',
     'django.contrib.staticfiles',
     'stuff',
 )

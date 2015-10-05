@@ -31,8 +31,6 @@ def create_user(request):
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
                     usertype=request.POST['usertype'])
-
-
     try:
         u.save()
     except db.Error:
@@ -45,8 +43,8 @@ def create_user(request):
         s = models.Seller(company=models.Company.objects.get(name=request.POST['company_name']), user_account=u)
         try:
              s.save()
-        except IntegrityError as e:
-            return render_to_response("", {"message": e.message})
+   	except IntegrityError as e:
+    	    return render_to_response("", {"message": e.message})
         #except db.Error:
             #return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
@@ -113,12 +111,10 @@ def create_transaction(request):
     t = models.Transaction(seller=seller, buyer=buyer, negotiation=request.POST['negotiation'])
     try:
         t.save()
-    except db.error:
-        return _error_response(request, "can't store Transaction. db error")
+    except IntegrityError as e:
+    	return render_to_response("", {"message": e.message})
+        ##return _error_response(request, "can't store Transaction. db error")
     return _success_response(request, {'transaction_id': t.pk})
-
-
-
 
 def create_JobApplication(request):
     if request.method != 'POST':
