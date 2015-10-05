@@ -88,6 +88,10 @@ def create_transaction(request):
     except db.Error:
         return _error_response(request, "can't store Transaction. db error")
 
+def view_all_transactions(request):
+    all_transactions = models.Transaction.objects.all()
+    return JsonResponse({'ok': True, 'transaction_list': all_transactions})
+
 
 def create_JobApplication(request):
     if request.method != 'POST':
