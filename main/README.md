@@ -2,8 +2,8 @@
 
 ## Site Navigation
 
-Home Page
-Item Details
+* Home Page
+* Item Details
 
 ## Creator of Bootstrap Theme
 
