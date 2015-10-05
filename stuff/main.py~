@@ -1,5 +1,5 @@
 import datetime
-import json
+import json as simplejson
 
 from django.http import JsonResponse
 from django.contrib.auth import hashers
@@ -7,9 +7,8 @@ from django import db
 from stuff import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.core import serializers
 
-from django.db import IntegrityError
-from django.shortcuts import render_to_response
 
 
 #Tested
@@ -43,10 +42,8 @@ def create_user(request):
         s = models.Seller(company=models.Company.objects.get(name=request.POST['company_name']), user_account=u)
         try:
              s.save()
-   	except IntegrityError as e:
-    	    return render_to_response("", {"message": e.message})
-        #except db.Error:
-            #return _error_response(request, "can't store Seller. db error")
+        except db.Error:
+            return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
         return _success_response(request, {'seller_id': s.pk})
 
@@ -88,11 +85,40 @@ def lookup_user(request, user_id):
                                             'resume':b.resume_url})
 
 
+def all_sellers(request):
+    if request.method!= 'GET':
+        return _error_response(request, "must make GET request")
+    seller_list = []
+    try:
+        sellers = models.Seller.objects.all()
+        for s in sellers:
+            s_info = {'username': s.user_account.username,
+                      'id': s.user_account.pk,
+                      'company': s.company.name
+                      }
+            seller_list.append(s_info)
+        #data = serializers.serialize('json', seller_list)
+    except:
+         return _error_response(request, 'could not retrieve sellers.')
+    return _success_response(request, json.dumps(seller_list))
 
 
 
 
 
+def all_buyers(request):
+    if request.method!= 'GET':
+        return _error_response(request, "must make GET request")
+    try:
+        #sellers = models.User.objects.filter(usertype='seller')
+        sellers = models.Seller.objects.all()
+        data = serializers.serialize('json', sellers)
+    except:
+         return _error_response(request, 'could not retrieve sellers.')
+    return _success_response(request, data)
+
+
+#Tested
 def create_transaction(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
@@ -111,10 +137,12 @@ def create_transaction(request):
     t = models.Transaction(seller=seller, buyer=buyer, negotiation=request.POST['negotiation'])
     try:
         t.save()
-    except IntegrityError as e:
-    	return render_to_response("", {"message": e.message})
-        ##return _error_response(request, "can't store Transaction. db error")
+    except db.Error:
+        return _error_response(request, "can't store Transaction. db error")
     return _success_response(request, {'transaction_id': t.pk})
+
+
+
 
 def create_JobApplication(request):
     if request.method != 'POST':

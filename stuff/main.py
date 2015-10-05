@@ -1,5 +1,5 @@
 import datetime
-import json
+import json as simplejson
 
 from django.http import JsonResponse
 from django.contrib.auth import hashers
@@ -7,6 +7,7 @@ from django import db
 from stuff import models
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.core import serializers
 
 
 
@@ -29,8 +30,6 @@ def create_user(request):
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
                     usertype=request.POST['usertype'])
-
-
     try:
         u.save()
     except db.Error:
@@ -86,11 +85,41 @@ def lookup_user(request, user_id):
                                             'resume':b.resume_url})
 
 
+def all_sellers(request):
+    if request.method!= 'GET':
+        return _error_response(request, "must make GET request")
+
+    try:
+        seller_list = []
+        sellers = models.Seller.objects.all()
+        for s in sellers:
+            s_info = {'username': s.user_account.username,
+                      'id': s.user_account.pk,
+                      'company': s.company.name
+                      }
+            seller_list.append(s_info)
+        #data = serializers.serialize('json', seller_list)
+    except:
+         return _error_response(request, 'could not retrieve sellers.')
+    return _success_response(request, simplejson.dumps(seller_list))
 
 
 
 
 
+def all_buyers(request):
+    if request.method!= 'GET':
+        return _error_response(request, "must make GET request")
+    try:
+        #sellers = models.User.objects.filter(usertype='seller')
+        buyers = models.Buyer.objects.all()
+        data = serializers.serialize('json', buyers)
+    except:
+         return _error_response(request, 'could not retrieve sellers.')
+    return _success_response(request, data)
+
+
+#Tested
 def create_transaction(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
@@ -119,10 +148,10 @@ def create_transaction(request):
 def create_JobApplication(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
-    if 'buyer_id' not in request.POST or 'company_name' not in request.POST or 'greeting' not in request.POST or 'detail' not in request.POST:
+    if 'buyer_u_id' not in request.POST or 'company_name' not in request.POST or 'greeting' not in request.POST or 'detail' not in request.POST:
         return _error_response(request, "missing required fields")
     try:
-        buyer = models.Buyer.objects.get(pk=request.POST['buyer_id'])
+        buyer = models.objects.get(pk=request.POST['buyer_id'])
     except models.Buyer.DoesNotExist:
         return _error_response(request, "buyer not found")
     a = models.JobApplication(company=models.Company.get(name=request.POST['company_name']), buyer=buyer, greeting=request.POST['greeting'], detail=request.POST['detail'])

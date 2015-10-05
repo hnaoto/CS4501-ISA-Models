@@ -14,6 +14,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/company/create$', main.create_company),
                        url(r'^api/v1/job-application/create$', main.create_JobApplication),
                        url(r'^api/v1/users/(\d+)$', main.lookup_user),
+                       url(r'^api/v1/sellers/all$', main.all_sellers),
+                       url(r'^api/v1/buyers/all$', main.all_buyers),
                        
                        
 
