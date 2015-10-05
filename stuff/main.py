@@ -1,5 +1,5 @@
 import datetime
-import json as simplejson
+import json
 
 from django.http import JsonResponse
 from django.contrib.auth import hashers
@@ -60,6 +60,10 @@ def create_user(request):
         return _success_response(request, {'buyer_id': b.pk})
 
 
+
+##This wont' work....
+##The info is not what we need ....
+'''
 def view_all_buyers(request):
     all_buyers = models.Buyer.objects.all()
     return JsonResponse({'ok': True, 'buyer_list': all_buyers})
@@ -67,7 +71,7 @@ def view_all_buyers(request):
 def view_all_sellers(request):
     all_sellers = models.Seller.objects.all()
     return JsonResponse({'ok': True, 'seller_list': all_sellers})
-
+'''
 
 
 
@@ -92,11 +96,10 @@ def lookup_user(request, user_id):
                                             'usertype': u.usertype,
                                             'resume':b.resume_url})
 
-
+#Tested .. something still require polish
 def all_sellers(request):
     if request.method!= 'GET':
         return _error_response(request, "must make GET request")
-
     try:
         seller_list = []
         sellers = models.Seller.objects.all()
@@ -105,26 +108,41 @@ def all_sellers(request):
                       'id': s.user_account.pk,
                       'company': s.company.name
                       }
+
             seller_list.append(s_info)
+
         #data = serializers.serialize('json', seller_list)
+        data = {'ok':True,
+                'resp': seller_list}
     except:
          return _error_response(request, 'could not retrieve sellers.')
-    return _success_response(request, simplejson.dumps(seller_list))
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 
 
 
+#Tested .. something still require polish
 def all_buyers(request):
     if request.method!= 'GET':
         return _error_response(request, "must make GET request")
     try:
-        #sellers = models.User.objects.filter(usertype='seller')
+        buyer_list = []
         buyers = models.Buyer.objects.all()
-        data = serializers.serialize('json', buyers)
+        for b in buyers:
+            b_info = {'username': b.user_account.username,
+                      'id': b.user_account.pk,
+                      'company': b.resume_url
+                      }
+
+            buyer_list.append(b_info)
+        #data = serializers.serialize('json', seller_list)
+        data = {'ok':True,
+                'resp': buyer_list}
     except:
          return _error_response(request, 'could not retrieve sellers.')
-    return _success_response(request, data)
+    return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 
 #Tested
@@ -157,20 +175,25 @@ def view_all_transactions(request):
     return JsonResponse({'ok': True, 'transaction_list': all_transactions})
 
 
+#Tested
 def create_JobApplication(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
     if 'buyer_u_id' not in request.POST or 'company_name' not in request.POST or 'greeting' not in request.POST or 'detail' not in request.POST:
         return _error_response(request, "missing required fields")
     try:
-        buyer = models.objects.get(pk=request.POST['buyer_id'])
+        buyer_user_account = models.User.objects.get(pk=request.POST['buyer_u_id'])
+        buyer = models.Buyer.objects.get(user_account=buyer_user_account)
     except models.Buyer.DoesNotExist:
         return _error_response(request, "buyer not found")
-    a = models.JobApplication(company=models.Company.get(name=request.POST['company_name']), buyer=buyer, greeting=request.POST['greeting'], detail=request.POST['detail'])
+    a = models.JobApplication(company=models.Company.objects.get(name=request.POST['company_name']), buyer=buyer, greeting=request.POST['greeting'], detail=request.POST['detail'])
     try:
         a.save()
     except db.Error:
         return _error_response(request, "can't store JobApplication. db error")
+    return _success_response(request, {'application_id': a.pk})
+
+
 
 def view_company_JobApplications(request, company_id):
     if  request.method !='GET':
@@ -188,7 +211,7 @@ def view_company_JobApplications(request, company_id):
 #Tested
 def create_company(request):
     if request.method != 'POST':
-        return HttpResponse("must make POST", status=400)
+        return _error_response(request, "must make POST request")
     if 'name' not in request.POST or 'description' not in request.POST:
         return _error_response(request, "missing fields")
     #create basic user account
@@ -196,8 +219,8 @@ def create_company(request):
     try:
         c.save()
     except db.Error:
-        return HttpResponse("DB error", status=500)
-    return HttpResponse("Company stored Ok", status=200)
+         return _error_response(request, "DB error, company could not be stored.")
+    return _success_response(request, {'company_id': c.pk})
 
 
 
