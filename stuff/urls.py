@@ -5,9 +5,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from stuff import main
 
 urlpatterns = patterns('',
-                       
-                       
-                       
+                           
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^api/v1/users/create$', main.create_user),
                        url(r'^api/v1/buyers/all/', main.view_all_buyers),
@@ -18,11 +16,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/job-application/create$', main.create_JobApplication),
                        url(r'^api/v1/job-application/view/(\d+)$', main.view_company_JobApplications),
                        url(r'^api/v1/users/(\d+)$', main.lookup_user),
-                       
-                       
 
 )
-
 
 urlpatterns += staticfiles_urlpatterns()
 

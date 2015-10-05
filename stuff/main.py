@@ -4,7 +4,7 @@ import json
 from django.http import JsonResponse
 from django.contrib.auth import hashers
 from django import db
-from stuff import models
+from stuff import models #TODO: import specific models from .models, to prevent having to retype models everytime
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
