@@ -61,6 +61,11 @@ def create_user(request):
         return _success_response(request, {'buyer_id': b.pk})
 
 
+def view_all_buyers(request):
+    all_buyers = models.Buyer.objects.all()
+    return JsonResponse({'ok': True, 'transaction_list': all_buyers})
+
+
 
 
 
