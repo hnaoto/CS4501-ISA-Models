@@ -115,6 +115,10 @@ def create_transaction(request):
 
 
 
+def view_all_transactions(request):
+    all_transactions = models.Transaction.objects.all()
+    return JsonResponse({'ok': True, 'transaction_list': all_transactions})
+
 
 def create_JobApplication(request):
     if request.method != 'POST':
