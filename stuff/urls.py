@@ -16,6 +16,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/transaction/all/', main.view_all_transactions),
                        url(r'^api/v1/company/create$', main.create_company),
                        url(r'^api/v1/job-application/create$', main.create_JobApplication),
+                       url(r'^api/v1/job-application/view/(\d+)$', main.view_company_JobApplications),
                        url(r'^api/v1/users/(\d+)$', main.lookup_user),
                        
                        

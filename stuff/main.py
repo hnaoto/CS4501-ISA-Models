@@ -143,6 +143,18 @@ def create_JobApplication(request):
     except db.Error:
         return _error_response(request, "can't store JobApplication. db error")
 
+def view_company_JobApplications(request, company_id):
+    if  request.method !='GET':
+        return _error_response(request, "must make GET request")
+    try:
+        cur_company = get_object_or_404(models.Company, id=company_id)
+        job_application_list = models.JobApplication.objects.all().filter(company=cur_company)
+    except models.Company.DoesNotExist:
+        return _error_response(request, "company not found")
+
+    return _success_response(request, {'job_application_list': job_application_list})
+
+
 
 #Tested
 def create_company(request):
