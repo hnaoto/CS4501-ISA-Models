@@ -45,10 +45,9 @@ def create_user(request):
         s = models.Seller(company=models.Company.objects.get(name=request.POST['company_name']), user_account=u)
         try:
              s.save()
-        except IntegrityError as e:
-            return render_to_response("", {"message": e.message})
-        #except db.Error:
-            #return _error_response(request, "can't store Seller. db error")
+
+        except db.Error:
+            return _error_response(request, "can't store Seller. db error")
             #return HttpResponse("can't write into DB",status=500)
         return _success_response(request, {'seller_id': s.pk})
 
@@ -113,7 +112,7 @@ def create_transaction(request):
     t = models.Transaction(seller=seller, buyer=buyer, negotiation=request.POST['negotiation'])
     try:
         t.save()
-    except db.error:
+    except db.Error:
         return _error_response(request, "can't store Transaction. db error")
     return _success_response(request, {'transaction_id': t.pk})
 
