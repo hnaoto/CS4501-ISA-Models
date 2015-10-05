@@ -4,7 +4,7 @@ import json as simplejson
 from django.http import JsonResponse
 from django.contrib.auth import hashers
 from django import db
-from stuff import models
+from stuff import models #TODO: import specific models from .models, to prevent having to retype models everytime
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core import serializers
@@ -59,6 +59,14 @@ def create_user(request):
             return _error_response(request, "can't store Seller. db error")
         return _success_response(request, {'buyer_id': b.pk})
 
+
+def view_all_buyers(request):
+    all_buyers = models.Buyer.objects.all()
+    return JsonResponse({'ok': True, 'buyer_list': all_buyers})
+
+def view_all_sellers(request):
+    all_sellers = models.Seller.objects.all()
+    return JsonResponse({'ok': True, 'seller_list': all_sellers})
 
 
 
@@ -144,6 +152,10 @@ def create_transaction(request):
 
 
 
+def view_all_transactions(request):
+    all_transactions = models.Transaction.objects.all()
+    return JsonResponse({'ok': True, 'transaction_list': all_transactions})
+
 
 def create_JobApplication(request):
     if request.method != 'POST':
@@ -159,6 +171,18 @@ def create_JobApplication(request):
         a.save()
     except db.Error:
         return _error_response(request, "can't store JobApplication. db error")
+
+def view_company_JobApplications(request, company_id):
+    if  request.method !='GET':
+        return _error_response(request, "must make GET request")
+    try:
+        cur_company = get_object_or_404(models.Company, id=company_id)
+        job_application_list = models.JobApplication.objects.all().filter(company=cur_company)
+    except models.Company.DoesNotExist:
+        return _error_response(request, "company not found")
+
+    return _success_response(request, {'job_application_list': job_application_list})
+
 
 
 #Tested
