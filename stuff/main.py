@@ -11,6 +11,8 @@ from django.core import serializers
 
 
 
+
+##Written by Trinity
 #Tested
 def create_user(request):
     if request.method != 'POST':
@@ -61,17 +63,7 @@ def create_user(request):
 
 
 
-##This wont' work....
-##The info is not what we need ....
-'''
-def view_all_buyers(request):
-    all_buyers = models.Buyer.objects.all()
-    return JsonResponse({'ok': True, 'buyer_list': all_buyers})
 
-def view_all_sellers(request):
-    all_sellers = models.Seller.objects.all()
-    return JsonResponse({'ok': True, 'seller_list': all_sellers})
-'''
 
 
 
@@ -170,11 +162,6 @@ def create_transaction(request):
 
 
 
-def view_all_transactions(request):
-    all_transactions = models.Transaction.objects.all()
-    return JsonResponse({'ok': True, 'transaction_list': all_transactions})
-
-
 #Tested
 def create_JobApplication(request):
     if request.method != 'POST':
@@ -194,20 +181,6 @@ def create_JobApplication(request):
     return _success_response(request, {'application_id': a.pk})
 
 
-
-def view_company_JobApplications(request, company_id):
-    if  request.method !='GET':
-        return _error_response(request, "must make GET request")
-    try:
-        cur_company = get_object_or_404(models.Company, id=company_id)
-        job_application_list = models.JobApplication.objects.all().filter(company=cur_company)
-    except models.Company.DoesNotExist:
-        return _error_response(request, "company not found")
-
-    return _success_response(request, {'job_application_list': job_application_list})
-
-
-
 #Tested
 def create_company(request):
     if request.method != 'POST':
@@ -224,8 +197,6 @@ def create_company(request):
 
 
 
-
-
 def _error_response(request, error_msg):
     return JsonResponse({'ok': False, 'error': error_msg})
 
@@ -234,3 +205,37 @@ def _success_response(request, resp=None):
         return JsonResponse({'ok': True, 'resp': resp})
     else:
         return JsonResponse({'ok': True})
+
+
+
+
+
+##Written by Nipun
+def view_company_JobApplications(request, company_id):
+    if  request.method !='GET':
+        return _error_response(request, "must make GET request")
+    try:
+        cur_company = get_object_or_404(models.Company, id=company_id)
+        job_application_list = models.JobApplication.objects.all().filter(company=cur_company)
+    except models.Company.DoesNotExist:
+        return _error_response(request, "company not found")
+
+    return _success_response(request, {'job_application_list': job_application_list})
+
+
+
+def view_all_transactions(request):
+    all_transactions = models.Transaction.objects.all()
+    return JsonResponse({'ok': True, 'transaction_list': all_transactions})
+
+
+
+def view_all_buyers(request):
+    all_buyers = models.Buyer.objects.all()
+    return JsonResponse({'ok': True, 'buyer_list': all_buyers})
+
+def view_all_sellers(request):
+    all_sellers = models.Seller.objects.all()
+    return JsonResponse({'ok': True, 'seller_list': all_sellers})
+
+
