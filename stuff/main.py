@@ -1,5 +1,7 @@
 import datetime
 import json
+import os
+import base64
 
 from django.http import JsonResponse
 from django.contrib.auth import hashers
@@ -8,7 +10,8 @@ from stuff import models #TODO: import specific models from .models, to prevent 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core import serializers
-
+from django.contrib.auth.hashers import check_password
+from datetime import datetime
 
 
 
@@ -197,14 +200,95 @@ def create_company(request):
 
 
 
-def _error_response(request, error_msg):
-    return JsonResponse({'ok': False, 'error': error_msg})
-
-def _success_response(request, resp=None):
-    if resp:
-        return JsonResponse({'ok': True, 'resp': resp})
+def log_in(request):
+    if request.method != 'POST':
+	    return _error_response(request, "must make POST request")
+    if 'username' not in request.POST or 'password' not in request.POST:
+        return _error_response(request, "missing fields")
+    if models.User.objects.filter(username=request.POST['username']).exists():
+        pw = request.POST['password']
+        u = models.User.objects.get(username=request.POST['username'])
+        if check_password(pw, u.password):
+            auth = auth_generetor()
+            a = models.Authenticator(user_id = u.pk, authenticator = auth, date_created = datetime.now())
+            try:
+                a.save()
+            except db.Error:
+                return _error_response(request, "DB error, authenticator could not be stored.")
+            return _success_response(request, {'authenticator': auth})
+        else:
+            return _error_response(request, "wrong password")
     else:
-        return JsonResponse({'ok': True})
+        return _error_response(request, "username does not exist")
+      
+   
+def auth_generetor():
+    authenticator = base64.b64encode(os.urandom(32)).decode('utf-8')
+    return authenticator
+
+
+def log_out(request):
+    if request.method != 'POST':
+        return _error_response(request, "must make POST request")
+    if 'user_id' not in request.POST:
+        return _error_response(request, "missing user_id")
+    delete_auth(request, request.POST['user_id'])
+    return _success_response(request, "log out successfully")
+
+
+def check_login(request):
+    if request.method != 'POST':
+        return _error_response(request, "must make POST request")
+    if 'authenticator' not in request.POST:
+        return _error_response(request, "missing authenticator")
+    if models.Authenticator.objects.filter(authenticator=request.POST['authenticator']).exists():
+        return _success_response(request, " authenticator is valid")
+    
+
+
+def delete_auth(request, user_id):
+    try:
+        a = get_object_or_404(models.Authenticator, user_id=user_id).delete()
+    except db.Error:
+        return _error_response(request, "DB error. can not get auth for the passed user_id.")
+    
+  
+  
+##Should I use GET?
+def check_auth(request):
+    if request.method != 'POST':
+        return _error_response(request, "must make POST request")
+    if 'authenticator' not in request.POST or 'user_id' not in request.POST:
+        return _error_response(request, "missing user_id or authenticator")
+    auth_value = request.POST['authenticator']
+    user_id = request.POST['user_id']
+    if models.Authenticator.objects.filter(user_id=user_id).exists():
+        a = models.Authenticator.objects.get(user_id=user_id)
+        if a.authenticator == auth_value:
+            return _success_response(request, "authenticator is valid")
+        return _error_response(request, {'authenticator': auth_value})
+    return _error_response(request, "invalid user id")
+    
+	
+	
+	
+
+
+
+#delete the authenticator when certain amount ot time passed
+#def upate_auth():
+
+
+
+
+    
+    
+
+
+
+
+
+
 
 
 
@@ -238,4 +322,21 @@ def view_all_sellers(request):
     all_sellers = models.Seller.objects.all()
     return JsonResponse({'ok': True, 'seller_list': all_sellers})
 
+
+
+
+
+
+
+
+
+
+def _error_response(request, error_msg):
+    return JsonResponse({'ok': False, 'error': error_msg})
+
+def _success_response(request, resp=None):
+    if resp:
+        return JsonResponse({'ok': True, 'resp': resp})
+    else:
+        return JsonResponse({'ok': True})
 

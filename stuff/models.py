@@ -55,8 +55,10 @@ class JobApplication(models.Model):
   
 #written by Trintiy
 class Authenticator(models.Model):
-    user_id = models.IntegerField()
-    authenticator = models.CharField(max_length=256)
+    user_id = models.IntegerField(unique=True)
+    authenticator = models.CharField(max_length=255, primary_key=True)
+    #MySQL does not allow unique CharFields to have a max_length > 255.
+    #DO NOT try 256...
     date_created = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return str(self.user_id)

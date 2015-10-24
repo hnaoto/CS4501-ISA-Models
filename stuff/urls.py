@@ -16,6 +16,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/job-application/create$', main.create_JobApplication),
                        url(r'^api/v1/job-application/view/(\d+)$', main.view_company_JobApplications),
                        url(r'^api/v1/users/(\d+)$', main.lookup_user),
+                       url(r'^api/v1/login/', main.log_in),
+                       url(r'^api/v1/logout/', main.log_out),
+                       url(r'^api/v1/auth/login', main.check_auth),
+                       
 
 )
 
