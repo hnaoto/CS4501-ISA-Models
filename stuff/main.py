@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core import serializers
 from django.contrib.auth.hashers import check_password
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 
@@ -35,10 +35,12 @@ def create_user(request):
     u = models.User(username=request.POST['username'],
                     password=hashers.make_password(request.POST['password']),
                     usertype=request.POST['usertype'])
+
     try:
         u.save()
     except db.Error:
         return _error_response(request, "can't store User. db error")
+
 
 
 
@@ -199,7 +201,7 @@ def create_company(request):
     return _success_response(request, {'company_id': c.pk})
 
 
-
+#Tested
 def log_in(request):
     if request.method != 'POST':
 	    return _error_response(request, "must make POST request")
@@ -221,12 +223,12 @@ def log_in(request):
     else:
         return _error_response(request, "username does not exist")
       
-   
+
 def auth_generetor():
     authenticator = base64.b64encode(os.urandom(32)).decode('utf-8')
     return authenticator
 
-
+#Tested
 def log_out(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
@@ -236,6 +238,7 @@ def log_out(request):
     return _success_response(request, "log out successfully")
 
 
+#Tested
 def check_login(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
@@ -255,7 +258,18 @@ def delete_auth(request, user_id):
   
   
 ##Should I use GET?
+##Tested
 def check_auth(request):
+    if request.method != 'POST':
+        return _error_response(request, "must make POST request")
+    if 'authenticator' not in request.POST:
+        return _error_response(request, "missing user_id or authenticator")
+    auth_value = request.POST['authenticator']
+    if models.Authenticator.objects.filter(authenticator=auth_value).exists():
+        a = models.Authenticator.objects.get(authenticator=auth_value)
+        return _success_response(request, {'user_id': a.user_id})
+    return _error_response(request, "invalid auth")
+    '''
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
     if 'authenticator' not in request.POST or 'user_id' not in request.POST:
@@ -268,10 +282,20 @@ def check_auth(request):
             return _success_response(request, "authenticator is valid")
         return _error_response(request, {'authenticator': auth_value})
     return _error_response(request, "invalid user id")
-    
+    '''
 	
-	
-	
+
+##The auth created over 24 hours would be considered as "old"
+#For doing test right, I am using get...have't figured out when and where this method should be called
+def delete_old_auth(request):
+    if request.method != 'GET':
+        return _error_response(request, "must make POST request")
+    time_threhold = datetime.now() - timedelta(days=1)
+    if models.Authenticator.objects.exclude(date_created__range=(time_threhold, datetime.now())).exists():
+         models.Authenticator.objects.exclude(date_created__range=(time_threhold, datetime.now())).delete()
+         return _success_response(request, "Old authenticators are deleted")
+    return _error_response(request, "No old auth found")
+
 
 
 

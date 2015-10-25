@@ -2,11 +2,28 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
+
+
+
+#written by Trintiy
+class Authenticator(models.Model):
+    user_id = models.IntegerField(unique=True)
+    authenticator = models.CharField(max_length=255, primary_key=True)
+    #MySQL does not allow unique CharFields to have a max_length > 255.
+    #DO NOT try 256...
+    date_created = models.DateTimeField(default=timezone.now)
+    def __str__(self):
+        return str(self.user_id)
+
+
 #top-level model for website user
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=96)
-    usertype = models.CharField(max_length=6) #TODO: instead of usertype field, have links to both buyer and seller profile and check each time to see if profile in question exists
+    usertype = models.CharField(max_length=6)
+    #TODO: instead of usertype field, have links to both buyer and seller profile and check each time to see if profile in question exists
+    #Feedback: the usertype is used to identified usertype when an account is created... User has been linked already in Buyer and Seller
+
     def __str__(self):
         return self.username
 
@@ -53,14 +70,4 @@ class JobApplication(models.Model):
     def __str__(self):
         return str(self.greeting)
   
-#written by Trintiy
-class Authenticator(models.Model):
-    user_id = models.IntegerField(unique=True)
-    authenticator = models.CharField(max_length=255, primary_key=True)
-    #MySQL does not allow unique CharFields to have a max_length > 255.
-    #DO NOT try 256...
-    date_created = models.DateTimeField(default=timezone.now)
-    def __str__(self):
-        return str(self.user_id)
-    
-    
+
