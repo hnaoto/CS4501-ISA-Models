@@ -69,5 +69,14 @@ class JobApplication(models.Model):
     detail = models.TextField(max_length=1000)
     def __str__(self):
         return str(self.greeting)
-  
 
+#the new listing model
+class Note(models.Model):
+    title = models.CharField(max_length=255)
+    user_id = models.IntegerField(default=0)
+    #user = models.ForeignKey(User)
+    details = models.TextField(max_length=1000)
+    def __str__(self):
+        return str(self.title)
+    
+    

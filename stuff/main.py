@@ -232,9 +232,9 @@ def auth_generetor():
 def log_out(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
-    if 'user_id' not in request.POST:
-        return _error_response(request, "missing user_id")
-    delete_auth(request, request.POST['user_id'])
+    if 'authenticator' not in request.POST:
+        return _error_response(request, "missing auth")
+    delete_auth(request, request.POST['authenticator'])
     return _success_response(request, "log out successfully")
 
 
@@ -248,12 +248,13 @@ def check_login(request):
         return _success_response(request, " authenticator is valid")
     
 
-
-def delete_auth(request, user_id):
+#helper
+def delete_auth(request, auth):
     try:
-        a = get_object_or_404(models.Authenticator, user_id=user_id).delete()
+        a = get_object_or_404(models.Authenticator, authenticator=auth).delete()
+        return _success_response(request, "auth is deleted.")
     except db.Error:
-        return _error_response(request, "DB error. can not get auth for the passed user_id.")
+        return _error_response(request, "DB error. can not find the auth.")
     
   
   
@@ -263,7 +264,7 @@ def check_auth(request):
     if request.method != 'POST':
         return _error_response(request, "must make POST request")
     if 'authenticator' not in request.POST:
-        return _error_response(request, "missing user_id or authenticator")
+        return _error_response(request, "missing authenticator")
     auth_value = request.POST['authenticator']
     if models.Authenticator.objects.filter(authenticator=auth_value).exists():
         a = models.Authenticator.objects.get(authenticator=auth_value)
@@ -285,6 +286,7 @@ def check_auth(request):
     '''
 	
 
+#Tested
 ##The auth created over 24 hours would be considered as "old"
 #For doing test right, I am using get...have't figured out when and where this method should be called
 def delete_old_auth(request):
@@ -298,10 +300,23 @@ def delete_old_auth(request):
 
 
 
-
-#delete the authenticator when certain amount ot time passed
-#def upate_auth():
-
+#only the user has valid authenticator could create notes
+def create_note(request):
+    if request.method!= 'POST':
+        return _error_response(request, "must make POST request")
+    if 'authenticator' not in request.POST or 'title' not in request.POST or 'details' not in request.POST:
+        return _error_response(request, "missing fields")
+    auth_value = request.POST['authenticator']
+    if models.Authenticator.objects.filter(authenticator=auth_value).exists():
+        a = models.Authenticator.objects.get(authenticator=auth_value)
+        n = models.Note(user_id=a.user_id, details=request.POST['details'], title=request.POST['title'])
+        try:
+            n.save()
+            return _success_response(request, "note is created successfully.")
+        except db.Error:
+            return _error_response(request, "db error, can not store note.")
+    else:
+        return _error_response(request, "invalid authenticator")
 
 
 
@@ -354,7 +369,7 @@ def view_all_sellers(request):
 
 
 
-
+#Helper
 def _error_response(request, error_msg):
     return JsonResponse({'ok': False, 'error': error_msg})
 
