@@ -299,7 +299,7 @@ def delete_old_auth(request):
     return _error_response(request, "No old auth found")
 
 
-
+#Tested
 #only the user has valid authenticator could create notes
 def create_note(request):
     if request.method!= 'POST':
