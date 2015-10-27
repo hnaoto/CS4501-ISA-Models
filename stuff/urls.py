@@ -20,7 +20,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/auth/logout$', main.log_out),
                        url(r'^api/v1/auth/verify$', main.check_auth),
                        url(r'^api/v1/auth/delete_old_auth$', main.delete_old_auth),
-                       url(r'api/v1/auth/note/create$', main.create_note),
+                       url(r'^api/v1/auth/note/create$', main.create_note),
                        
 
 )
