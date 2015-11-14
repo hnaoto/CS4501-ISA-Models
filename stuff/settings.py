@@ -58,7 +58,7 @@ PREPEND_WWW = False
 ROOT_URLCONF = 'stuff.urls'
 
 WSGI_APPLICATION = 'stuff.wsgi.application'
-
+CSRF_COOKIE_SECURE = False
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

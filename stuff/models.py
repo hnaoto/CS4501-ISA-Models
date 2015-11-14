@@ -40,21 +40,21 @@ class Buyer(models.Model):
     resume_url = models.URLField(max_length=200)
     user_account = models.ForeignKey(User, unique=True)
     def __str__(self):
-        return self.user_account
+        return self.user_account.username
 
 #users offering job referrals for a specific company
 class Seller(models.Model):
     company = models.OneToOneField(Company)
     user_account = models.ForeignKey(User, unique=True)
     def __str__(self):
-        return self.user_account
+        return self.user_account.username
 
 #when a buyer submits a job application and a seller accepts it, a transaction is created
 class Transaction(models.Model):
-    #buyer = models.ForeignKey(buyer)
-    #seller = models.ForeignKey(Seller)
-    buyer= models.OneToOneField(Buyer)
-    seller = models.OneToOneField(Seller)
+    buyer = models.ForeignKey(Buyer)
+    seller = models.ForeignKey(Seller)
+    #buyer= models.OneToOneField(Buyer)
+    #seller = models.OneToOneField(Seller)
     timestamp = models.DateTimeField(default=timezone.now)
     negotiation = models.TextField(max_length=1000)
     def __str__(self):
@@ -62,9 +62,10 @@ class Transaction(models.Model):
 
 #when a buyer is interested in a company, they submit a job application which any seller can see if they belong to the company which the buyer applied too
 class JobApplication(models.Model):
-    #company = models.ForeignKey(Company, unique=true)
-    company = models.OneToOneField(Company)
-    buyer = models.OneToOneField(Buyer)
+    company = models.ForeignKey(Company)
+    buyer = models.ForeignKey(Buyer)
+    #company = models.OneToOneField(Company)
+    #buyer = models.OneToOneField(Buyer)
     greeting = models.CharField(max_length=256)
     detail = models.TextField(max_length=1000)
     def __str__(self):

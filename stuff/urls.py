@@ -13,14 +13,14 @@ urlpatterns = patterns('',
                        url(r'^api/v1/transaction/create$', main.create_transaction),
                        url(r'^api/v1/transaction/all$', main.view_all_transactions),
                        url(r'^api/v1/company/create$', main.create_company),
-                       url(r'^api/v1/job-application/create$', main.create_JobApplication),
-                       url(r'^api/v1/job-application/view/(\d+)$', main.view_company_JobApplications),
+                       url(r'^api/v1/application/create$', main.create_JobApplication),
+                       url(r'^api/v1/application/view/(\d+)$', main.view_company_JobApplications),
                        url(r'^api/v1/users/(\d+)$', main.lookup_user),
                        url(r'^api/v1/auth/login$', main.log_in),
                        url(r'^api/v1/auth/logout$', main.log_out),
                        url(r'^api/v1/auth/verify$', main.check_auth),
                        url(r'^api/v1/auth/delete_old_auth$', main.delete_old_auth),
-                       url(r'api/v1/auth/note/create$', main.create_note),
+                       url(r'^api/v1/note/create$', main.create_note),
                        
 
 )
