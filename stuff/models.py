@@ -29,7 +29,7 @@ class User(models.Model):
 
 #profile for each company on recruiting platform
 class Company(models.Model):
-    name = models.CharField(max_length=24)
+    name = models.CharField(max_length=24, unique=True)
     description = models.TextField(max_length=500)
     def __str__(self):
         return self.name
@@ -44,7 +44,7 @@ class Buyer(models.Model):
 
 #users offering job referrals for a specific company
 class Seller(models.Model):
-    company = models.OneToOneField(Company)
+    company = models.ForeignKey(Company)
     user_account = models.ForeignKey(User, unique=True)
     def __str__(self):
         return self.user_account.username

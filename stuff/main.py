@@ -176,7 +176,7 @@ def create_JobApplication(request):
     try:
         buyer_user_account = models.User.objects.get(pk=request.POST['buyer_u_id'])
         buyer = models.Buyer.objects.get(user_account=buyer_user_account)
-    except models.Buyer.DoesNotExist:
+    except models.Buyer.Doesxist:
         return _error_response(request, "buyer not found")
     a = models.JobApplication(company=models.Company.objects.get(name=request.POST['company_name']), buyer=buyer, greeting=request.POST['greeting'], detail=request.POST['detail'])
     try:
@@ -312,9 +312,11 @@ def create_note(request):
         n = models.Note(user_id=a.user_id, details=request.POST['details'], title=request.POST['title'])
         try:
             n.save()
-            return _success_response(request, "note is created successfully.")
         except db.Error:
             return _error_response(request, "db error, can not store note.")
+        u = models.User.objects.get(pk=a.user_id)
+        resp = {'id': n.pk, 'username':u.username, 'resp': 'Note is created successfully.'}
+        return _success_response(request, resp)
     else:
         return _error_response(request, "invalid authenticator")
 
